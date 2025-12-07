@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "CugoSDK.h"
 #include <Servo.h>
 #include <PacketSerial.h>
@@ -96,30 +97,6 @@ uint16_t read_uint16_t_from_header(uint8_t* buf, const int TARGET) {
   return val;
 }
 
-void set_motor_cmd_binary(uint8_t* reciev_buf, int size, float max_rpm) {
-  if (size > 0) {
-    MotorRPM reciev_rpm, clamped_rpm;
-    reciev_rpm.left = read_float_from_buf(reciev_buf, TARGET_RPM_L_PTR);
-    reciev_rpm.right = read_float_from_buf(reciev_buf, TARGET_RPM_R_PTR);
-
-    // 物理的最高速以上のときは、モータの最高速に丸める
-    bool rotation_clanp_logic = true;  // 回転成分を優先した丸めアルゴリズムを有効化。falseにすると上限rpmだけに注目したシンプルなロジックに切り替わる。
-    if (rotation_clanp_logic) {        // 回転成分を優先して残し、直進方向を減らす方法で速度上限以上の速度を丸める。曲がりきれず激突することを防止する。
-      clamped_rpm = clamp_rpm_rotation_priority(reciev_rpm, max_rpm);
-    } else {
-      clamped_rpm = clamp_rpm_simple(reciev_rpm, max_rpm);
-    }
-    cugo_rpm_direct_instructions(clamped_rpm.left, clamped_rpm.right);
-    /*  モータに指令値を無事セットできたら、通信失敗カウンタをリセット
-        毎回リセットすることで通常通信できる。
-        10Hzで通信しているので、100msJOBでカウンタアップ。
-    */
-    COM_FAIL_COUNT = 0;
-  } else {
-    cugo_rpm_direct_instructions(0.0, 0.0);
-  }
-}
-
 MotorRPM clamp_rpm_simple(MotorRPM target_rpm, float max_rpm) {
   MotorRPM new_rpm = target_rpm;
   if (abs(target_rpm.left) >= max_rpm) {
@@ -162,6 +139,30 @@ MotorRPM clamp_rpm_rotation_priority(MotorRPM target_rpm, float max_rpm) {
   new_rpm.right = clamped_v_trans + clamped_v_rot;
 
   return new_rpm;
+}
+
+void set_motor_cmd_binary(uint8_t* reciev_buf, int size, float max_rpm) {
+  if (size > 0) {
+    MotorRPM reciev_rpm, clamped_rpm;
+    reciev_rpm.left = read_float_from_buf(reciev_buf, TARGET_RPM_L_PTR);
+    reciev_rpm.right = read_float_from_buf(reciev_buf, TARGET_RPM_R_PTR);
+
+    // 物理的最高速以上のときは、モータの最高速に丸める
+    bool rotation_clanp_logic = true;  // 回転成分を優先した丸めアルゴリズムを有効化。falseにすると上限rpmだけに注目したシンプルなロジックに切り替わる。
+    if (rotation_clanp_logic) {        // 回転成分を優先して残し、直進方向を減らす方法で速度上限以上の速度を丸める。曲がりきれず激突することを防止する。
+      clamped_rpm = clamp_rpm_rotation_priority(reciev_rpm, max_rpm);
+    } else {
+      clamped_rpm = clamp_rpm_simple(reciev_rpm, max_rpm);
+    }
+    cugo_rpm_direct_instructions(clamped_rpm.left, clamped_rpm.right);
+    /*  モータに指令値を無事セットできたら、通信失敗カウンタをリセット
+        毎回リセットすることで通常通信できる。
+        10Hzで通信しているので、100msJOBでカウンタアップ。
+    */
+    COM_FAIL_COUNT = 0;
+  } else {
+    cugo_rpm_direct_instructions(0.0, 0.0);
+  }
 }
 
 uint16_t calculate_checksum(const void* data, size_t size, size_t start = 0) {
