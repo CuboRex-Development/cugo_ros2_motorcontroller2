@@ -1,13 +1,13 @@
 ![image](https://github.com/CuboRex-Development/cugo_ros_control/assets/97714660/a2525198-fa61-4c4d-9a0f-7dd6824fa625)
 
-# cugo_ros2_motorcontroller2
-ROS 2でクローラロボット開発プラットフォームを制御するArduinoスケッチです。
+# dcmotor_differential_drive_controller
+ROS 2でクローラロボット開発プラットフォームを制御するファームウェアです。
 
 セットでROS 2パッケージの[cugo_ros2_control2](https://github.com/CuboRex-Development/cugo_ros2_control2)と使用します。
 
 > [!WARNING]
-> このArduinoスケッチはクローラロボット開発プラットフォーム CuGo V4 / V3i 専用です。
-> 
+> このファームウェアはクローラロボット開発プラットフォーム CuGo V4 / V3i 専用です。
+>
 > ROS開発キット CuGo V3 をご利用の方は[こちら](https://github.com/CuboRex-Development/cugo_ros_motorcontroller/tree/uno-udp)を参照してください。
 
 
@@ -17,15 +17,15 @@ ROS 2でクローラロボット開発プラットフォームを制御するArd
 - [Installation](#installation)
 - [Usage](#usage)
 - [Note](#note)
-- [License](#license)    
+- [License](#license)
 
 
 # Features
-cugo_ros2_motorcontroller2では、ROS 2パッケージの [cugo_ros2_control2](https://github.com/CuboRex-Development/cugo_ros2_control2)から受信した目標回転数になるようにモータ制御し、エンコーダから取得したカウント数をPCに返信します。
+dcmotor_differential_drive_controllerでは、ROS 2パッケージの [cugo_ros2_control2](https://github.com/CuboRex-Development/cugo_ros2_control2)から受信した目標回転数になるようにモータ制御し、エンコーダから取得したカウント数をPCに返信します。
 
 また、付属のプロポ（MR-8）を用いて、コントローラ操作と自律走行の切り替えができます。左スティックを左に倒すことでコントローラ操作を受け付けるRC-MODEに、右に倒すことでROSの速度ベクトルを受け付けるROS-MODEに切り替えることができます。
 
-自律走行中に誤った判断をして障害物に衝突しそうなシーンでは、プロポによりRC-MODEに変更することで、コントローラ操作に即時に切り替わりロボットを止めることができます。  
+自律走行中に誤った判断をして障害物に衝突しそうなシーンでは、プロポによりRC-MODEに変更することで、コントローラ操作に即時に切り替わりロボットを止めることができます。
 
 
 ![image](https://user-images.githubusercontent.com/22425319/234765585-23458585-ea44-40d5-b71f-395c93509fc8.png)
@@ -41,16 +41,19 @@ cugo_ros2_motorcontroller2では、ROS 2パッケージの [cugo_ros2_control2](
 ハードウェア
 * RaspberryPiPico（クローラロボット開発プラットフォームに同梱）
 
-Arduino標準ライブラリ 
-* Servo.h
-* PacketSerial.h
-* RPi_Pico_TimerInterrupt.h
-* hardware/watchdog.h
- 
-# Installation
- Arduino IDEでcugo_ros2_motorcontroller2.inoを開き、スケッチを書き込んでください。
 
- ArduinoIDEのインストール方法や書き込み方法などの基本的な操作方法はこちらの[2.準備](https://github.com/CuboRex-Development/cugo-beginner-programming/tree/pico)をご覧ください。
+# Installation
+
+## 方法1: ファームウェアを直接書き込む（推奨）
+
+1. [Releases](https://github.com/abudori3939/dcmotor_differential_drive_controller/releases)ページから最新の `firmware-vX.X.X.uf2` をダウンロード
+2. Raspberry Pi PicoのBOOTSELボタンを押しながらUSBケーブルでPCに接続
+3. 表示されたドライブに `.uf2` ファイルをドラッグ＆ドロップ
+4. 自動的に書き込みが完了し、Picoが再起動します
+
+## 方法2: ソースからビルドする
+
+開発者向け。[Development Guide](documents/development.md)を参照してください。
 
 
 > [!IMPORTANT]
@@ -59,7 +62,7 @@ Arduino標準ライブラリ
 > こちらの[準備2-6](https://github.com/CuboRex-Development/cugo-beginner-programming/tree/pico?tab=readme-ov-file#2-6-ld-2%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A2%E3%83%BC%E3%83%89%E3%82%92%E6%9C%89%E5%8A%B9%E5%8C%96)の操作を行い、ROS-MODEを有効化してください。
 
 
- 
+
 # Usage
 
 クローラロボット開発プラットフォームのRaspberryPiPicoとPCをUSBケーブルで接続してください。
@@ -73,11 +76,9 @@ Arduino標準ライブラリ
 ![system](https://github.com/CuboRex-Development/cugo_ros_motorcontroller/assets/22425319/8da5af96-69a2-4591-a654-4b4bc1e0abde)
 
 
-
 # Note
 ご不明点がございましたら、[お問い合わせフォーム](https://cuborex.com/contact/)にてお問い合わせください。回答いたします。
 
 
 # License
 このプロジェクトはApache License 2.0のもと、公開されています。詳細はLICENSEをご覧ください。
- 
