@@ -4,9 +4,6 @@
 #include "RPi_Pico_TimerInterrupt.h"
 #include "hardware/watchdog.h"
 
-#define CUGOV4_MAX_MOTOR_RPM  130    //V4モータの速度上限値
-#define CUGOV3i_MAX_MOTOR_RPM 180    //V3iモータの速度上限値
-
 // 各種動作モード定義
 #define CUGO_RC_MODE 0
 #define CUGO_CMD_MODE 1
